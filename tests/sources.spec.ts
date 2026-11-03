@@ -1094,7 +1094,8 @@ describe('feishu event consumer', () => {
     await vi.waitFor(() => expect(store.triggers.get(feishuTriggerId('om_3'))).toBeDefined(), until)
     expect(['om_1', 'om_2'].map(id => store.triggers.get(feishuTriggerId(id))?.meta.direct)).toEqual([false, true])
     expect(store.get(KV.feishu.chats)).toEqual({ oc_group: false, oc_dm: true })
-    expect(health.feishu).toMatchObject({ state: 'error', detail: expect.stringContaining('JSON') })
+    // The malformed line is reported on the same chain that then stores `om_3`, so its report lands just after that store.
+    await vi.waitFor(() => expect(health.feishu).toMatchObject({ state: 'error', detail: expect.stringContaining('JSON') }), until)
     controller.abort(); await running; store.close()
   }, 20_000)
   it('drops the events it reads once the Source is off', async () => {
