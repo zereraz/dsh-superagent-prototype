@@ -7,9 +7,7 @@ export class TextCache {
   private size = 0
   constructor(private readonly limit: number) {}
   get(key: string): string | undefined {
-    const text = this.texts.get(key)
-    if (text !== undefined) { this.texts.delete(key); this.texts.set(key, text) }
-    return text
+    return this.texts.get(key)
   }
   set(key: string, text: string): void {
     this.size -= this.texts.get(key)?.length ?? 0
